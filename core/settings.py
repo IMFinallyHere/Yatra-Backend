@@ -87,6 +87,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
+    "DATETIME_FORMAT": "%d-%m-%Y %H:%M:%S",
     'EXCEPTION_HANDLER': 'core.utils.custom_exception_handler',
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', 'rest_framework.filters.SearchFilter'],
     'DEFAULT_PERMISSION_CLASSES': [
