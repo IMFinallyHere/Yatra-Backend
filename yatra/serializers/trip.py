@@ -4,8 +4,22 @@ from yatra.serializers.user import UserSerializer
 
 
 class TripSerializer(serializers.ModelSerializer):
-    # created_on = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S", read_only=True)
     created_by = UserSerializer(fields=['name', 'id'], read_only=True)
+    activity_count = serializers.SerializerMethodField(read_only=True)
+    bus_count = serializers.SerializerMethodField(read_only=True)
+    user_count = serializers.SerializerMethodField(read_only=True)
+
+    @staticmethod
+    def get_activity_count(obj):
+        return obj.activities.count()
+
+    @staticmethod
+    def get_bus_count(obj):
+        return obj.buses.count()
+
+    @staticmethod
+    def get_user_count(obj):
+        return sum(trip_user.user.partners.count() + 1 for trip_user in obj.trip_users.prefetch_related('user__partners').all()) # +1 for user itself
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('fields', self.fields)

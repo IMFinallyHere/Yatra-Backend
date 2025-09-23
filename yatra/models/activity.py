@@ -6,7 +6,7 @@ from yatra.models.user import User
 
 class Activity(Model):
     created_on = DateTimeField(default=timezone.now, db_index=True)
-    created_by = ForeignKey(User, PROTECT, 'activities')
+    created_by = ForeignKey(User, PROTECT, 'activities_created')
     name = CharField(max_length=50)
     trip = ForeignKey(Trip, CASCADE, 'activities')
     started = BooleanField(default=False)
@@ -19,9 +19,9 @@ class Activity(Model):
 
 class UserActivity(Model):
     created_on = DateTimeField(default=timezone.now)
-    created_by = ForeignKey(User, PROTECT, 'user_activity_relation')
-    user = ForeignKey(User, CASCADE, 'activities')
-    activity = ForeignKey(Activity, CASCADE, 'users')
+    created_by = ForeignKey(User, PROTECT, 'user_activities_created')
+    user = ForeignKey(User, CASCADE, 'user_activities')
+    activity = ForeignKey(Activity, CASCADE, 'activity_users')
     checked_in = BooleanField(default=False)
     checked_in_on = DateTimeField(default=timezone.now)
     checked_out = BooleanField(default=False)
