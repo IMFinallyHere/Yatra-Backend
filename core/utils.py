@@ -1,18 +1,23 @@
 from django.http import Http404
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.exceptions import NotAuthenticated, PermissionDenied
+from rest_framework.exceptions import NotAuthenticated, PermissionDenied, AuthenticationFailed
 from rest_framework.views import exception_handler
 import django_filters
 from rest_framework.pagination import PageNumberPagination
 from django.db import models
+from rest_framework_simplejwt.exceptions import InvalidToken
+
 
 def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
 
     if response is not None:
-        if isinstance(exc, (AuthenticationFailed, NotAuthenticated, PermissionDenied)):
+        if isinstance(exc, InvalidToken):
+            return response
+
+        elif isinstance(exc, (AuthenticationFailed, NotAuthenticated, PermissionDenied, InvalidToken)):
             response.data = {'non_field_errors': [str(exc.detail)]}
             response.status_code = exc.status_code
+
         elif isinstance(exc, Http404):
             response.data = {'non_field_errors': [str(exc)]}
 
