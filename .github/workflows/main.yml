@@ -1,0 +1,30 @@
+name: Production Push
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  web-deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Deploying Code
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{secrets.HOST}}
+          username: ${{secrets.USERNAME}}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd yatra
+            git pull
+            source venv/bin/activate
+            pip install -r requirements.txt
+            python manage.py migrate
+            deactivate
+            systemctl restart gunicorn
