@@ -14,6 +14,11 @@ class Bus(Model):
     class Meta:
         unique_together = ('trip', 'number')
 
+    def save(self, *args, **kwargs):
+        if self.number:
+            self.number = self.number.upper()
+        super().save(*args, **kwargs)
+
 class UserBus(Model):
     created_on = DateTimeField(default=timezone.now)
     created_by = ForeignKey(User, PROTECT, 'user_bus_created')
