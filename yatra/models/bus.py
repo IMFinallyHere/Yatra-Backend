@@ -25,7 +25,7 @@ class UserBus(Model):
     user = ForeignKey(User, CASCADE, 'buses')
     bus = ForeignKey(Bus, CASCADE, 'users')
     checked_in = BooleanField(default=False)
-    checked_in_on = DateTimeField(default=timezone.now)
+    checked_in_on = DateTimeField(null=True)
 
     class Meta:
         unique_together = ('bus', 'user')
