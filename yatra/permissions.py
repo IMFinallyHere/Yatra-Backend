@@ -11,3 +11,7 @@ class CanUpdateTrip(BasePermission):
 class AssignBusToUser(BasePermission):
     def has_permission(self, request, view):
         return request.user.has_perm('yatra.add_userbus')
+
+class AssignTripToUser(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.has_perm('yatra.add_usertrip')
