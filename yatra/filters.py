@@ -2,6 +2,7 @@ from core.utils import BuildFilters
 from yatra.models.trip import Trip
 from yatra.models.activity import Activity
 from yatra.models.bus import Bus
+from yatra.models.user import User
 
 TripFilter = BuildFilters(
     Trip,
@@ -20,5 +21,12 @@ ActivityFilter = BuildFilters(
 BusFilter = BuildFilters(
     Bus,
     fizzy_fields=['created_by__name', 'created_by__number', 'trip__name', 'number'],
+    date_fields=['created_on']
+).build()
+
+UserFilter = BuildFilters(
+    User,
+    exact_fields=['is_active'],
+    fizzy_fields=['name', 'number', 'created_by__name', 'created_by__number'],
     date_fields=['created_on']
 ).build()

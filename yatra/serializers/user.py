@@ -1,3 +1,4 @@
+from dataclasses import fields
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from django.contrib.auth.models import Group
@@ -31,6 +32,13 @@ class UserSerializer(serializers.ModelSerializer):
     created_on = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S", read_only=True)
     password = serializers.CharField(write_only=True)
     groups = GroupSerializer(fields=['name', 'id'], many=True, read_only=True)
+    created_by = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_created_by(obj):
+        if obj.created_by:
+            return UserSerializer(obj.created_by, fields=['name', 'id']).data
+        return None
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('fields', self.fields)

@@ -1,3 +1,7 @@
+from functools import partial
+from rest_framework.generics import ListAPIView
+from core.utils import SearchPagination
+from yatra.filters import UserFilter
 from yatra.serializers.user import UserSerializer, CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer, RegisterSerializer
 from rest_framework.views import APIView
 from rest_framework.permissions import DjangoModelPermissions
@@ -26,3 +30,12 @@ class RegisterView(APIView):
         d2 = {'success_message': ['User registered successfully.']}
         d2.update(d1)
         return Response(d2)
+
+class UserList(ListAPIView):
+    serializer_class = partial(UserSerializer, exclude=['is_superuser', 'groups', 'user_permissions'])
+    permission_classes = [DjangoModelPermissions]
+    queryset = User.objects.all()
+    pagination_class = SearchPagination
+    filterset_class = UserFilter
+    filterset_fields = UserFilter.Meta.fields
+    search_fields = UserFilter.fizzy_fields
