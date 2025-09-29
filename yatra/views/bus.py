@@ -64,18 +64,12 @@ def assign_users_to_bus(request, pk:int):
     bus = get_object_or_404(Bus, pk=pk)
 
     u = set(request.data.get('users'))
-    u = User.objects.filter(id__in=u).exclude(buses__bus=bus).all()
+    u = list(User.objects.filter(id__in=u).exclude(buses__bus=bus))
 
-    print(u)
-    objs = [UserBus(
-                created_by=request.user,
-                user=i,
-                bus=bus) for i in u]
-
-    print(objs)
+    objs = [UserBus(created_by=request.user, user=i, bus=bus) for i in u]
     UserBus.objects.bulk_create(objs)
     objs = UserBus.objects.filter(bus=bus, user__in=u).prefetch_related('bus', 'user', 'created_by')
-    print(objs)
+
     return Response(UserBusSerializer(instance=objs, many=True, exclude=['checked_in', 'checked_in_on']).data)
 
 
