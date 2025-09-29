@@ -2,7 +2,7 @@ from django.urls import path
 from yatra.views.user import RegisterView, Login, Refresh
 from yatra.views.trip import TripFilterCreate, TripRUD, start_trip, end_trip
 from yatra.views.activity import ActivityFilterCreate, ActivityRUD, start_activity, end_activity
-from yatra.views.bus import BusFilterCreate, BusUD
+from yatra.views.bus import BusFilterCreate, BusUD, assign_users_to_bus
 
 urlpatterns = [
     path('register/', RegisterView.as_view()),
@@ -17,6 +17,7 @@ urlpatterns = [
     path('activity/<int:pk>/start/', start_activity),
     path('activity/<int:pk>/end/', end_activity),
     path('trip/<int:pk>/bus/', BusFilterCreate.as_view()),
-    path('bus/<int:pk>/', BusUD.as_view())
+    path('bus/<int:pk>/', BusUD.as_view()),
+    path('bus/<int:pk>/assign/', assign_users_to_bus)
 
 ]

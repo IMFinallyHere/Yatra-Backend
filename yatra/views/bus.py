@@ -1,12 +1,15 @@
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView, get_object_or_404
 from rest_framework.permissions import DjangoModelPermissions
 from core.utils import SearchPagination
 from yatra.filters import BusFilter
-from yatra.serializers.bus import BusSerializer
-from yatra.models.bus import Bus
+from yatra.serializers.bus import BusSerializer, UserBusSerializer
+from yatra.models.bus import Bus, UserBus
 from functools import partial
+from yatra.permissions import AssignBusToUser
+from yatra.models.user import User
 
 class BusFilterCreate(ListCreateAPIView):
     permission_classes = [DjangoModelPermissions]
@@ -54,4 +57,28 @@ class BusUD(APIView):
         bus.save()
 
         return Response({'success_message': ['Bus deleted.']})
+
+@api_view(['POST'])
+@permission_classes([AssignBusToUser])
+def assign_users_to_bus(request, pk:int):
+    bus = get_object_or_404(Bus, pk=pk)
+
+    u = set(request.data.get('users'))
+    u = User.objects.filter(id__in=u).exclude(buses__bus=bus).all()
+
+    print(u)
+    objs = [UserBus(
+                created_by=request.user,
+                user=i,
+                bus=bus) for i in u]
+
+    print(objs)
+    UserBus.objects.bulk_create(objs)
+    objs = UserBus.objects.filter(bus=bus, user__in=u).prefetch_related('bus', 'user', 'created_by')
+    print(objs)
+    return Response(UserBusSerializer(instance=objs, many=True, exclude=['checked_in', 'checked_in_on']).data)
+
+
+
+
 
